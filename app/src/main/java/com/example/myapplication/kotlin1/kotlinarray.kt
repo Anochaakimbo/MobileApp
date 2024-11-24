@@ -27,7 +27,7 @@ fun calculateGPAX(scoreArr : Array<Int>) {
 
     for(i in 0 .. scoreArr.size-1){
         val (gradeEng,gradeNum) = gradeFormat(scoreArr[i])
-        print("(${gradeNum}*${credits}")
+        print("(${gradeNum}*${credits})")
         if (i != scoreArr.size-1){
             print("+")
         }
