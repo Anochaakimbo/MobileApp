@@ -51,6 +51,40 @@ class Teacher(fName: String, lName: String,deptName:String,year:Int): Person(fNa
         println("$firstName teachers $creditClass credits.")
     }
 }
+
+
+class Student(fName: String, lName: String,deptName:String): Person(fName, lName,deptName) {
+    private var creditTotal : Int = 0
+    private var gradeTotal : Double = 0.0
+
+    override fun showDetail() {
+        print("$firstName is a student at $department,College of Computing")
+    }
+
+    fun gradeEnroll(subj: Subject,score:Int){
+        var gradeAlphabet : String = ""
+        var gradeNum : Double = 0.0
+        when{
+            score < 50 -> {gradeAlphabet = "F" ; gradeNum = 0.0}
+            score in 50 .. 54  -> {gradeAlphabet = "D" ; gradeNum = 1.0}
+            score in 55..59 -> {gradeAlphabet = "D+" ; gradeNum = 1.5}
+            score in 60 .. 64 -> {gradeAlphabet = "C" ; gradeNum = 2.0}
+            score in 65..69 -> {gradeAlphabet = "C+" ; gradeNum = 2.5}
+            score in 70..74 -> {gradeAlphabet = "B" ; gradeNum = 3.0}
+            score in 74..79-> {gradeAlphabet = "B+" ; gradeNum = 3.5}
+
+            else -> { gradeAlphabet = "A"; gradeNum = 4.0 }
+        }
+
+        creditTotal += subj.credit
+        gradeTotal += (gradeNum * subj.credit)
+        println("${subj.toString()} Score : $score , Grade : $gradeAlphabet")
+    }
+    fun displayGPA(){
+        val gpa = gradeTotal / creditTotal
+        println(String.format("%s's GPA is %.2f",firstName,gpa))
+    }
+}
     object Singleton_Person{
         val first_name = "David"
         val last_name = "Bowie"
