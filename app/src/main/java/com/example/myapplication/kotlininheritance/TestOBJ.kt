@@ -26,4 +26,23 @@ fun main(){
 
     println("MEMBER NO 4 : ")
     Singleton_Person.showCompanion()
+
+    println()
+
+
+
+    var personGrace = Student("Grace","Moore","Information Technology")
+    println("Member NO 5 : ${personGrace.firstName}")
+    personGrace.showDetail()
+
+    var mb = Subject("SC362007","Mobile Device Programming",3)
+    var db = Subject("SC362005","Database Analysis and Design",3)
+    var oop = Subject("SC361003","Object Oriented Concepts and Programming",1)
+
+
+    personGrace.gradeEnroll(mb,65)
+    personGrace.gradeEnroll(db,73)
+    personGrace.gradeEnroll(oop,90)
+
+    personGrace.displayGPA()
 }
