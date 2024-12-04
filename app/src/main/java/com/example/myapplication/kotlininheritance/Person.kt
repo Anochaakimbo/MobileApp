@@ -52,7 +52,6 @@ class Teacher(fName: String, lName: String,deptName:String,year:Int): Person(fNa
     }
 }
 
-
 class Student(fName: String, lName: String,deptName:String): Person(fName, lName,deptName) {
     private var creditTotal : Int = 0
     private var gradeTotal : Double = 0.0
