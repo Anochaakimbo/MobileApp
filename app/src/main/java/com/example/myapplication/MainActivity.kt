@@ -231,7 +231,7 @@ fun BoxLayout(modifier: Modifier = Modifier){
 @Composable
 fun ConstraintLayoutTest(modifier: Modifier = Modifier){
     ConstraintLayout(modifier =Modifier.fillMaxSize()){
-    val(firstText,secondText,ninjaImage) = createRefs()
+    val (firstText,secondText,ninjaImage) = createRefs()
         Text(
         text = "Hello World",
         style = TextStyle(background = Color.Yellow),
