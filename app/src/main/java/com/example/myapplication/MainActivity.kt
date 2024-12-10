@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
 //                    ConstraintLayoutTest(
 //                        Modifier.padding(innerPadding)
 //                    )
-                    BackGroudBox(
+                    ConstraintLayoutTest(
                         Modifier.padding(innerPadding)
                     )
 
@@ -101,13 +101,13 @@ fun ColumLayoutText(modifier: Modifier = Modifier){
             style = TextStyle(background = Color.Gray),
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(1.dp)
         )
         Text(
             text = "hello Text3",
             fontWeight = FontWeight.Bold,
             fontSize = 10.sp,
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(1.dp)
         )
     }
 }
@@ -227,37 +227,45 @@ fun BoxLayout(modifier: Modifier = Modifier){
         )
     }
 }
-
+//663380193-6
 @Composable
 fun ConstraintLayoutTest(modifier: Modifier = Modifier){
     ConstraintLayout(modifier =Modifier.fillMaxSize()){
-    val (firstText,secondText,ninjaImage) = createRefs()
+    val (firstText,secondText,ninjaImage,arnoldImage,arnoldText) = createRefs()
+        Image(
+            painter = painterResource(R.drawable._407cd7d9b10d751ebdbdd869e5a03dd),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            alpha = 0.3F,
+            modifier = Modifier.size(800.dp)
+        )
         Text(
-        text = "Hello World",
-        style = TextStyle(background = Color.Yellow),
+        text = "Happy Birthday",
         fontSize = 30.sp,
+        color = Color.Black,
         modifier = modifier.constrainAs(firstText){
             centerHorizontallyTo(parent)
             }
         )
         Text(
-            text = "We are ninja!",
+            text = "TAFLEX!",
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
+            color = Color.Black,
             modifier = modifier.constrainAs(secondText){
                 top.linkTo(ninjaImage.bottom)
                 centerHorizontallyTo(parent)
             }
         )
         Image(
-            painter = painterResource(R.drawable.hqdefault),
+            painter = painterResource(R.drawable._62574481_3837605453156079_7435578897054395141_n),
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .size(300.dp)
                 .border(
                     width = 0.8.dp,
-                    color = Color.Magenta,
+                    color = Color.Black,
                     shape = RoundedCornerShape(10.dp)
                 )
                 .constrainAs(ninjaImage) {
@@ -265,47 +273,95 @@ fun ConstraintLayoutTest(modifier: Modifier = Modifier){
                     centerHorizontallyTo(parent)
                 }
         )
-}
-}
-
-@Composable
-fun BackGroudBox(modifier: Modifier = Modifier){
-    Box(modifier = modifier.fillMaxSize()
-    ){
         Image(
-            painter = painterResource(R.drawable.background),
+            painter = painterResource(R.drawable._62578313_549867857846624_6671650043103883452_n),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = modifier.constrainAs(arnoldImage){
+                top.linkTo(secondText.bottom)
+                start.linkTo(secondText.end)
+            }.size(120.dp)
+        )
+        Text(
+            text = "From Arnold",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = modifier.constrainAs(arnoldText){
+                top.linkTo(arnoldImage.top)
+                start.linkTo(arnoldImage.start)
+            }
+        )
+
+}
+}
+//663380193-6
+@Composable
+fun HappyBirthday(modifier: Modifier = Modifier){
+    Box(modifier = modifier.fillMaxSize())
+    {
+        Image(
+            painter = painterResource(R.drawable._407cd7d9b10d751ebdbdd869e5a03dd),
             contentScale = ContentScale.Crop,
             contentDescription = null,
-            alpha = 0.3F
+            alpha = 0.3F,
+            modifier = modifier.size(3000.dp)
         )
+
     }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .size(100.dp)
+        ) {
+            Image(
+                painter = painterResource(R.drawable._62578313_549867857846624_6671650043103883452_n),
+                contentScale = ContentScale.Fit,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+            Text(
+                text = "FROM ARNOLD",
+                fontSize =10.sp,
+                color = Color.Black,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 5.dp).padding(horizontal = 2.dp)
+            )
+        }
+    }
+
     Box(
         modifier.fillMaxSize().wrapContentSize(
             unbounded = true,
             align = Alignment.Center
         ).border(
-            width = 1.dp,
+            width = 5.dp,
             color = Color.Green.copy(alpha = 0.5f),
             shape = RoundedCornerShape(50.dp)
         )
-    ){
+    )
+    {
         Image(
-            painter = painterResource(R.drawable.hqdefault),
+            painter = painterResource(R.drawable._62574481_3837605453156079_7435578897054395141_n),
             contentDescription = null,
             contentScale = ContentScale.Fit,
-            modifier = modifier.size(400.dp)
+            modifier = modifier.size(300.dp).align(Alignment.Center)
         )
         Text(
-            text = "Happy Ninja!",
-            fontSize = 25.sp,
-            color = Color.Magenta,
-            modifier = modifier.padding(1.dp).align(Alignment.TopCenter)
+            text = "Happy Birthday!",
+            fontSize = 55.sp,
+            color = Color.Black,
+            modifier = modifier.padding(5.dp).align(Alignment.TopCenter)
         )
         Text(
-            text = "Merry Ninmas!",
+            text = "TAFLEX NO1 VALORANT!",
             fontSize = 25.sp,
-            color = Color.Magenta,
-            modifier = modifier.padding(1.dp).align(Alignment.BottomCenter)
+            color = Color.Black,
+            modifier = modifier.padding(5.dp).align(Alignment.BottomCenter)
         )
     }
 }
