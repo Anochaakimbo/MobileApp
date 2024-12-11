@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,8 +19,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +45,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import android.app.TimePickerDialog
+import android.icu.text.UnicodeSet.SpanCondition
+import android.icu.util.Calendar
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.input.pointer.motionEventSpy
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,20 +82,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    BoxLayout(
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-//                    RowLayout(
-//                        "World","We are Laos Ninja",
-//                        Modifier.padding(innerPadding)
-//                    )
-//                    ConstraintLayoutTest(
-//                        Modifier.padding(innerPadding)
-//                    )
-                    ConstraintLayoutTest(
-                        Modifier.padding(innerPadding)
-                    )
-
+                        MyScreen(
+                            modifier = Modifier.padding(innerPadding)
+                        )
                 }
             }
         }
@@ -365,3 +390,296 @@ fun HappyBirthday(modifier: Modifier = Modifier){
         )
     }
 }
+
+@Composable
+fun MyScreen (modifier: Modifier = Modifier) {
+
+    val contextForToast = LocalContext.current.applicationContext
+    var textInformation by rememberSaveable { mutableStateOf("") }
+
+    var id by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var subject by remember { mutableStateOf("") }
+    var credit by remember { mutableStateOf("") }
+
+    var hour by remember { mutableStateOf("") }
+    var minute by remember { mutableStateOf("") }
+    Column(
+        modifier = modifier.fillMaxSize().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Text(modifier = modifier.padding(10.dp),
+            text = "Enter Student information",
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp
+        )
+        IdNameContent(id = id, onIDChange = {id=it},
+            name = name, onNameChange = {name=it})
+
+
+
+        subject = SubjectDropdown()
+
+        creditContent(credit = credit, onCreditChange = {credit = it})
+
+        val (selectedHour,selectedMinute) = TimeContent()
+            hour = selectedHour
+            minute = selectedMinute
+
+
+        Spacer(modifier = modifier.height(height = 10.dp))
+
+        Button(
+            onClick = {
+                Toast.makeText(contextForToast,"This $id - $name - $subject - $credit - $hour - $minute",
+                    Toast.LENGTH_LONG).show()
+                textInformation =""
+                textInformation = "Student Name: $name\n"+"ID: $id\n"+
+                        "Subject : $subject\n"+"Credit : $credit\n"+
+                        "Time : $hour:$minute"
+            }
+        ) {
+            Text(text = "Show Information")
+        }
+        Column(modifier = modifier.width(400.dp).padding(16.dp)
+            .wrapContentHeight(unbounded = true)
+            .border(
+                width = 1.dp,
+                color = Color.Black,
+                shape = RoundedCornerShape(20.dp)
+            )
+        )
+        {
+            Text(
+                modifier = modifier.padding(10.dp),
+                text = "Student Information: ",
+                fontSize = 20.sp
+            )
+            Text(
+                modifier = modifier.padding(5.dp),
+                text = textInformation,
+                fontSize = 18.sp
+            )
+        }
+    }
+
+}
+
+@Composable
+fun MyTest(modifier: Modifier = Modifier){
+    val contextForToast = LocalContext.current.applicationContext
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Button(
+            onClick = {
+                Toast.makeText(
+                    contextForToast,
+                    "TEST",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        ){
+            Text(text = "Show Toast")
+        }
+    }
+    }
+
+@Composable
+fun MyButton(modifier: Modifier = Modifier){
+    val contextForToast = LocalContext.current.applicationContext
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(
+            space = 16.dp,
+            alignment = Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally
+
+    ) {
+        Button(
+            onClick = {
+                Toast.makeText(contextForToast, "Button", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            Text(text = "Button", fontSize = 25.sp)
+        }
+
+        ElevatedButton(
+            onClick = {
+                Toast.makeText(contextForToast, "ElevatedButton", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            Text(text = "ElevatedButton", fontSize = 25.sp)
+        }
+
+        FilledTonalButton(
+            onClick = {
+                Toast.makeText(contextForToast, "FilledTonalButton", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            Text(text = "FilledTonalButton", fontSize = 25.sp)
+        }
+
+        OutlinedButton(
+            onClick = {
+                Toast.makeText(contextForToast, "OutlinedButton", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            Text(text = "OutlinedButton", fontSize = 25.sp)
+        }
+
+        TextButton(
+            onClick = {
+                Toast.makeText(contextForToast, "TextButton", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            Text(text = "TextButton", fontSize = 25.sp)
+        }
+    }
+}
+
+@Composable
+fun MyTextField(modifier: Modifier = Modifier){
+    var value by remember { mutableStateOf("") }
+    Column (
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        TextField(
+            value = value,
+            onValueChange = {newText ->
+                value = newText
+            },
+            label = {Text(text = "Name")}
+        )
+        Text(text = "input Text: $value")
+    }
+}
+
+@Composable
+fun IdNameContent(id : String,onIDChange : (String) ->Unit,
+                  name : String , onNameChange : (String) -> Unit){
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        OutlinedTextField(
+            modifier = Modifier.width(400.dp),
+            value = id,
+            onValueChange = onIDChange,
+            label = {Text("Student ID") },
+        )
+        OutlinedTextField(
+            modifier = Modifier.width(400.dp),
+            value = name,
+            onValueChange = onNameChange,
+            label = {Text("Name")},
+        )
+    }
+}
+
+@Composable
+fun creditContent(credit : String,onCreditChange : (String) ->Unit){
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        OutlinedTextField(
+            modifier = Modifier.width(400.dp),
+            value = credit,
+            onValueChange = onCreditChange,
+            label = {Text("Credit") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            )
+        )
+
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SubjectDropdown(): String {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val subjectList = listOf(
+        "Select Subject",
+        "SC362907 Mobile Device Programming",
+        "SC362904 Web Application Programming",
+        "SC362905 Database Analysis and Design"
+    )
+    var expanded by remember { mutableStateOf(false) }
+    var selectSubject by remember { mutableStateOf(subjectList[0]) }
+
+    ExposedDropdownMenuBox(modifier = Modifier.clickable { keyboardController?.hide() },
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        })
+    {
+        OutlinedTextField(
+            modifier = Modifier.width(340.dp).menuAnchor().clickable { keyboardController?.hide() },
+            readOnly = true,
+            value = selectSubject,
+            onValueChange = {},
+            label = { Text("Subjects") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            }
+        )
+        {
+            subjectList.forEach{selectionOption->
+                DropdownMenuItem(
+                    text = {Text(selectionOption)},
+                    onClick = {
+                        selectSubject = selectionOption
+                        expanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                )
+            }
+        }
+    }
+    return selectSubject
+}
+@Composable
+fun TimeContent():Pair<String,String>{
+    val mContext = LocalContext.current
+
+    val mCalendar = Calendar.getInstance()
+    val mHour = mCalendar[Calendar.HOUR_OF_DAY]
+    val mMinute = mCalendar[Calendar.MINUTE]
+    
+    var selectedHour by remember { mutableStateOf("00") }
+    var selectedMinute by remember { mutableStateOf("00") }
+
+    val mTime = remember { mutableStateOf("") }
+
+    val mTimePickerDialog = TimePickerDialog(
+        mContext,3,
+        {_,mHour : Int , mMinute : Int ->
+            mTime.value = "$mHour:$mMinute"
+        selectedHour = if(mHour <10) "0${mHour}" else "$mHour"
+        selectedMinute = if(mMinute<10)"0${mMinute} " else "$mMinute"}
+            ,mHour,mMinute,true
+    )
+
+    Row(modifier = Modifier.fillMaxWidth().padding(start = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        )
+    {
+        Spacer(modifier =Modifier.height(height = 50.dp))
+
+        FilledIconButton(onClick = {mTimePickerDialog.show() },){
+            Icon(modifier = Modifier.size(30.dp),
+                imageVector = Icons.Outlined.DateRange,
+                contentDescription = "Time Icon")
+        }
+        Text(text = "Selected Time (HH:MM) = $selectedHour:$selectedMinute")
+    }
+    return Pair(selectedHour,selectedMinute)
+}
+
