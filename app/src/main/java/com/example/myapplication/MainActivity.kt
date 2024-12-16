@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -48,14 +49,18 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import android.app.TimePickerDialog
+import android.icu.text.SimpleDateFormat
 import android.icu.text.UnicodeSet.SpanCondition
 import android.icu.util.Calendar
+import android.widget.DatePicker
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.outlined.DateRange
@@ -68,11 +73,17 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.intl.Locale
+import java.util.Date
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
@@ -391,55 +402,53 @@ fun HappyBirthday(modifier: Modifier = Modifier){
     }
 }
 
+//663380193-6
 @Composable
 fun MyScreen (modifier: Modifier = Modifier) {
 
     val contextForToast = LocalContext.current.applicationContext
     var textInformation by rememberSaveable { mutableStateOf("") }
 
-    var id by rememberSaveable { mutableStateOf("") }
-    var name by rememberSaveable { mutableStateOf("") }
-    var subject by remember { mutableStateOf("") }
-    var credit by remember { mutableStateOf("") }
-
-    var hour by remember { mutableStateOf("") }
-    var minute by remember { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var gender by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var selectedDate by remember { mutableStateOf("DD-MM-YYYY") }
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier.verticalScroll(rememberScrollState()).fillMaxSize().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+
     ){
         Text(modifier = modifier.padding(10.dp),
-            text = "Enter Student information",
+            text = "Register Form",
             fontWeight = FontWeight.Bold,
             fontSize = 25.sp
         )
-        IdNameContent(id = id, onIDChange = {id=it},
-            name = name, onNameChange = {name=it})
+        IdNameContent(username = username, onIDChange = {username=it},
+            password = password, onNameChange = {password=it})
 
 
+        gender = RadioGroupUsage()
 
-        subject = SubjectDropdown()
 
-        creditContent(credit = credit, onCreditChange = {credit = it})
+        EmailContent (email = email, onEmailChange = {email = it})
 
-        val (selectedHour,selectedMinute) = TimeContent()
-            hour = selectedHour
-            minute = selectedMinute
+        selectedDate = DateContent()
 
 
         Spacer(modifier = modifier.height(height = 10.dp))
 
         Button(
             onClick = {
-                Toast.makeText(contextForToast,"This $id - $name - $subject - $credit - $hour - $minute",
+                Toast.makeText(contextForToast,"This $username - $password - $gender - $email",
                     Toast.LENGTH_LONG).show()
-                textInformation =""
-                textInformation = "Student Name: $name\n"+"ID: $id\n"+
-                        "Subject : $subject\n"+"Credit : $credit\n"+
-                        "Time : $hour:$minute"
+                textInformation ="Register Information :"
+                textInformation = "Username: $username\n"+"password: $password\n"+
+                        "Gender : $gender\n"+"Credit : $email\n"+
+                        "Birthday : $selectedDate"
             }
         ) {
-            Text(text = "Show Information")
+            Text(text = "Register")
         }
         Column(modifier = modifier.width(400.dp).padding(16.dp)
             .wrapContentHeight(unbounded = true)
@@ -452,7 +461,7 @@ fun MyScreen (modifier: Modifier = Modifier) {
         {
             Text(
                 modifier = modifier.padding(10.dp),
-                text = "Student Information: ",
+                text = "Register Information: ",
                 fontSize = 20.sp
             )
             Text(
@@ -560,32 +569,33 @@ fun MyTextField(modifier: Modifier = Modifier){
 }
 
 @Composable
-fun IdNameContent(id : String,onIDChange : (String) ->Unit,
-                  name : String , onNameChange : (String) -> Unit){
+fun IdNameContent(username : String,onIDChange : (String) ->Unit,
+                  password : String , onNameChange : (String) -> Unit){
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         OutlinedTextField(
             modifier = Modifier.width(400.dp),
-            value = id,
+            value = username,
             onValueChange = onIDChange,
-            label = {Text("Student ID") },
+            label = {Text("Username") },
         )
         OutlinedTextField(
             modifier = Modifier.width(400.dp),
-            value = name,
+            value = password,
             onValueChange = onNameChange,
-            label = {Text("Name")},
+            label = {Text("Password")},
+            visualTransformation = PasswordVisualTransformation()
         )
     }
 }
 
 @Composable
-fun creditContent(credit : String,onCreditChange : (String) ->Unit){
+fun EmailContent(email : String,onEmailChange : (String) ->Unit){
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         OutlinedTextField(
             modifier = Modifier.width(400.dp),
-            value = credit,
-            onValueChange = onCreditChange,
-            label = {Text("Credit") },
+            value = email,
+            onValueChange = onEmailChange,
+            label = {Text("Email") },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
@@ -652,7 +662,7 @@ fun TimeContent():Pair<String,String>{
     val mCalendar = Calendar.getInstance()
     val mHour = mCalendar[Calendar.HOUR_OF_DAY]
     val mMinute = mCalendar[Calendar.MINUTE]
-    
+
     var selectedHour by remember { mutableStateOf("00") }
     var selectedMinute by remember { mutableStateOf("00") }
 
@@ -682,4 +692,114 @@ fun TimeContent():Pair<String,String>{
     }
     return Pair(selectedHour,selectedMinute)
 }
+
+
+
+@Composable
+fun DateContent(): String {
+    val mContext = LocalContext.current
+    val mCalendar = Calendar.getInstance()
+    val mYear = mCalendar[Calendar.YEAR]
+    val mMonth = mCalendar[Calendar.MONTH]
+    val mDay = mCalendar[Calendar.DAY_OF_MONTH]
+    var selectedDate by remember { mutableStateOf("DD-MM-YYYY") }
+
+    val mDatePickerDialog = DatePickerDialog(
+        mContext,
+        { _, year, month, day ->
+            selectedDate = "$day-${getMonthName(month + 1)}-$year"
+        },
+        mYear,
+        mMonth,
+        mDay
+    )
+
+    Row(modifier = Modifier.fillMaxWidth().padding(start = 10.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(text = "Birthday")
+        FilledIconButton(onClick = { mDatePickerDialog.show() }) {
+            Icon(Icons.Outlined.DateRange, contentDescription = "Date Icon")
+        }
+        Text(text = selectedDate)
+    }
+    return selectedDate
+}
+
+fun getMonthName(month: Int): String {
+    return when (month) {
+        1 -> "Jan"
+        2 -> "Feb"
+        3 -> "Mar"
+        4 -> "Apr"
+        5 -> "May"
+        6 -> "Jun"
+        7 -> "Jul"
+        8 -> "Aug"
+        9 -> "Sep"
+        10 -> "Oct"
+        11 -> "Nov"
+        12 -> "Dec"
+        else -> ""
+    }
+}
+
+
+
+
+@Composable
+fun MyRadioGroup(
+    mItems: List<String>,
+    selected: String,
+    setSelected: (selected: String) -> Unit,
+) {
+    Row() {
+        mItems.forEach { item ->
+            Row(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = selected == item,
+                    onClick = {
+                        setSelected(item)
+                    },
+                    enabled = true,
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = Color.Magenta
+                    )
+                )
+                Text(
+                    text = item,
+                    modifier = Modifier.padding(start = 1.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RadioGroupUsage():String {
+    val kinds = listOf("Male", "Female", "Other")
+    val (selected, setSelected) = remember { mutableStateOf("") }
+
+    Column() {
+        Spacer(modifier = Modifier.height(height = 30.dp))
+        Text(
+            text = "Gender : $selected",
+            modifier = Modifier
+                .padding(start = 10.dp),
+        )
+
+        MyRadioGroup(
+            mItems = kinds,
+            selected = selected,
+            setSelected = setSelected
+        )
+    }
+    return selected
+}
+
+
+
+
 
