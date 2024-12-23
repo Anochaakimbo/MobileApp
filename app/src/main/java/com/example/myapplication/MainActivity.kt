@@ -43,7 +43,11 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.icu.util.Calendar
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Spacer
@@ -75,6 +79,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.PreviewActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -264,6 +270,37 @@ fun MyPage1(navHostController: NavHostController) {
         ) {
             Text(text = "Send Information")
         }
+        Button(onClick =  {
+            val packageName = "com.google.android.youtube"
+            startActivitySafe(context,packageName = packageName)
+        }
+        ){
+            Text(text= "Open Youtube")
+        }
+        Button(onClick =  {
+            val packageName = "com.ss.android.ugc.trill"
+            startActivitySafe(context,packageName = packageName)
+        }
+        ){
+            Text(text= "Open Tiktok")
+        }
+    }
+}
+
+fun startActivitySafe(context: Context?, packageName : String){
+    if(context == null || packageName == null){
+        Log.e("startActivitySafe","Context or intent is null!")
+        return
+    }
+    try{
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.`package`=packageName
+        context.startActivity(intent)
+    }catch (e:Exception){
+        val i = Intent(Intent.ACTION_VIEW)
+        i.data = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+        ContextCompat.startActivity(context, i,null)
+        Log.e("startActivitySafe","Error")
     }
 }
 
