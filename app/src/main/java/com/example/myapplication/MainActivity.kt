@@ -52,6 +52,7 @@ import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
@@ -59,8 +60,21 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -69,10 +83,20 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -85,6 +109,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
+import kotlin.math.exp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,11 +119,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
-                Surface(modifier = Modifier.fillMaxSize(),
-                    color =MaterialTheme.colorScheme.background
-                ) {
-                    ComposeAllNavigation()
-                }
+//                Surface(modifier = Modifier.fillMaxSize(),
+//                    color =MaterialTheme.colorScheme.background
+//                ) {
+//                    ComposeAllNavigation()
+//                }
+                MyScaffoldLayout()
+
             }
         }
     }
@@ -354,6 +383,126 @@ fun MyPage2(navHostController: NavHostController){
                 Text(text = "Go to Page1")
             }
         }
+    }
+}
+
+private fun prepareNavigationDrawerItems():List<NavigationDrawerData>{
+    val drawerItemsList = arrayListOf<NavigationDrawerData>()
+
+    drawerItemsList.add(NavigationDrawerData(label = "Home",icon = Icons.Filled.Home))
+    drawerItemsList.add(NavigationDrawerData(label = "Profile",icon = Icons.Filled.Person))
+    drawerItemsList.add(NavigationDrawerData(label = "Favorite",icon = Icons.Filled.Favorite))
+    return drawerItemsList
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyTopAppBar(contextForToast: Context) {
+    var expanded by remember { mutableStateOf(false) }
+    val contextForToast = LocalContext.current.applicationContext
+    Column(modifier = Modifier.fillMaxSize()) {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(text = "My Application", color = Color.DarkGray)
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = Color.Green.copy(alpha = 0.1f)
+            ),
+            actions = {
+                IconButton(
+                    onClick = {
+                        Toast.makeText(contextForToast,"Notification",Toast.LENGTH_SHORT).show()
+                    }){
+                    Icon(Icons.Default.Notifications, contentDescription = null)
+                }
+                IconButton(
+                    onClick = { expanded = true }
+                ) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "Open Menu")
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Setting") },
+                        onClick = {
+                            Toast.makeText(
+                                contextForToast, "Setting",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Outlined.Settings, contentDescription = null
+                            )
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Logout") },
+                        onClick = {
+                            Toast.makeText(contextForToast, "Logout", Toast.LENGTH_SHORT).show()
+                            expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.logout),
+                                contentDescription = null,
+                                modifier = Modifier.size(23.dp)
+                            )
+                        }
+                    )
+                }
+            }
+        )
+    }
+}
+
+
+
+
+
+@Composable
+fun MyBottomBar(navController: NavHostController,contextForToast: Context) {
+    val navigationItem = listOf(
+        Screen.Home,
+        Screen.Profile,
+        Screen.Favorite
+    )
+    var selectedScreen by remember { mutableStateOf(0) }
+    NavigationBar(containerColor = Color.Green.copy(alpha = 0.1f)) {
+        navigationItem.forEachIndexed { index, screen ->
+            NavigationBarItem(
+                icon = { Icon(imageVector = screen.icon, contentDescription = null) },
+                label = { Text(text = screen.name) },
+                selected = (selectedScreen == index),
+                onClick = {
+                    selectedScreen = index
+                    navController.navigate(screen.route)
+                    Toast.makeText(contextForToast, screen.name, Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
+    }
+}
+
+
+@Composable
+fun MyScaffoldLayout(){
+    val contextForToast = LocalContext.current.applicationContext
+    val navController = rememberNavController()
+    Scaffold (
+        topBar = { MyTopAppBar(contextForToast) },
+        bottomBar = { MyBottomBar(navController,contextForToast) },
+    ){paddingValues ->
+
+        Column(
+            modifier = Modifier.padding(paddingValues = paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        )
+        {}
+        NavGraph(navController = navController)
     }
 }
 
